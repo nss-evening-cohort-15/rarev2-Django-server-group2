@@ -1,1 +1,1 @@
-# rare-api-v2-way-2-cool
+# rarev2-server
