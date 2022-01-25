@@ -4,6 +4,14 @@
   "python.linting.pylintArgs": [
     "--load-plugins=pylint_django",
     "--django-settings-module=rare.settings"
+  ],
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "rare-django",
+      "database": "db.sqlite3"
+    }
   ]
 }
 
