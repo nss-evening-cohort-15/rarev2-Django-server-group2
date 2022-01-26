@@ -1,0 +1,15 @@
+[
+    {
+        "model": "rareapi.post",
+        "pk": 1,
+        "fields": {
+            "author": 1,
+            "category": 1,
+            "title": "Burrito kitty",
+            "publication_date": "2021-08-27T13:24:27.172Z",
+            "image_url": "https://pbs.twimg.com/profile_images/737359467742912512/t_pzvyZZ_400x400.jpg",
+            "content": "This is the most amazing burrito kitty of all the burrito kitties",
+            "approved": true 
+        }
+    }
+]
