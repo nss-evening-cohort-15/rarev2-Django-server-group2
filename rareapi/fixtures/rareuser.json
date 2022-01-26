@@ -1,0 +1,13 @@
+[
+    {
+        "model": "rareapi.rareuser",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "bio": "I'm nice",
+            "created_on": "2020-08-29T13:24:27.172Z",
+            "active": true,
+            "profile_image_url": "https://cutewallpaper.org/22/meme-profile-picture-wallpapers/47455818.jpg"
+        }
+    }
+]
