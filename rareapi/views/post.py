@@ -66,7 +66,28 @@ class PostView(ViewSet):
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
         return Response(serializer.data)
-  
+    
+    def update(self, request, pk=None):
+        """Handle PUT requests for a game
+        Returns:
+            Response -- Empty body with 204 status code
+        """
+        author = RareUser.objects.get(user=request.auth.user)
+        # import pdb;pdb.set_trace()
+        category = Category.objects.get(pk=request.data["category_id"])
+
+        post = Post.objects.get(pk=pk)        
+        post.author = author
+        post.title = request.data["title"]
+        post.publication_date = request.data["publication_date"]
+        post.image_url = request.data["image_url"]
+        post.content = request.data["content"]
+        post.category = category
+
+        post.save()
+        # 204 status code means everything worked but the
+        # server is not sending back any data in the response
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 class PostSerializer(serializers.ModelSerializer):
     """JSON serializer for posts
