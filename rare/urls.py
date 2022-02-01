@@ -16,11 +16,13 @@ Including another URLconf
 from django.conf.urls import include
 from django.urls import path
 from rest_framework import routers
+from rareapi.models import rareuser
 from rareapi.views import register_user, login_user
 from rareapi.views import CategoryView
 from rareapi.views import CommentView
 from rareapi.views import PostView
 from rareapi.views import RareUserView
+from rareapi.views.profile import get_rareuser_profile
 
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -36,4 +38,5 @@ urlpatterns = [
     path('register', register_user),
     path('login', login_user),
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
+    path('myprofile', get_rareuser_profile)
 ]
