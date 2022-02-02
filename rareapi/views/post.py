@@ -59,6 +59,11 @@ class PostView(ViewSet):
             Response -- JSON serialized list of posts
         """
         posts = Post.objects.all()
+        author = self.request.query_params.get('authorId', None)
+        
+        if author is not None:
+            posts = posts.filter(user__id=author)
+       
 
         # Note the addtional `many=True` argument to the
         # serializer. It's needed when you are serializing
@@ -66,14 +71,14 @@ class PostView(ViewSet):
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
         return Response(serializer.data)
-    
+
     def update(self, request, pk=None):
         """Handle PUT requests for a game
         Returns:
             Response -- Empty body with 204 status code
         """
         author = RareUser.objects.get(user=request.auth.user)
-        # import pdb;pdb.set_trace()
+
         category = Category.objects.get(pk=request.data["category_id"])
 
         post = Post.objects.get(pk=pk)        
@@ -106,6 +111,7 @@ class PostView(ViewSet):
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class PostSerializer(serializers.ModelSerializer):
     """JSON serializer for posts
