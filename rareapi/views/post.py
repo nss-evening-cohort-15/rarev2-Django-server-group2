@@ -51,6 +51,7 @@ class PostView(ViewSet):
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
+        
 
     def list(self, request):
         """Handle GET requests to get all posts
@@ -59,18 +60,18 @@ class PostView(ViewSet):
             Response -- JSON serialized list of posts
         """
         posts = Post.objects.all()
-        author = self.request.query_params.get('authorId', None)
+        authorId = self.request.query_params.get('authorId', None)
         
-        if author is not None:
-            posts = posts.filter(user__id=author)
+        if authorId is not None:
+            posts = posts.filter(author__id=authorId)
        
-
         # Note the addtional `many=True` argument to the
         # serializer. It's needed when you are serializing
         # a list of objects instead of a single object.
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
         return Response(serializer.data)
+    
 
     def update(self, request, pk=None):
         """Handle PUT requests for a game
@@ -93,6 +94,7 @@ class PostView(ViewSet):
         # 204 status code means everything worked but the
         # server is not sending back any data in the response
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+    
     
     def destroy(self, request, pk=None):
         """Handle DELETE requests for a single post
