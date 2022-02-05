@@ -21,6 +21,7 @@ from rareapi.views import register_user, login_user
 from rareapi.views import CategoryView
 from rareapi.views import CommentView
 from rareapi.views import PostView
+from rareapi.views import TagView
 from rareapi.views import RareUserView
 from rareapi.views.profile import get_rareuser_profile
 
@@ -29,6 +30,7 @@ router = routers.DefaultRouter(trailing_slash=False)
 # for the router.register -- 
 # first parameter for path route, next the viewset, last is string representation
 router.register(r'categories', CategoryView, 'category') 
+router.register(r'tags', TagView, 'tag') 
 router.register(r'posts', PostView, 'post') 
 router.register(r'comments', CommentView, 'comment') 
 router.register(r'rareusers', RareUserView, 'rareuser') 
