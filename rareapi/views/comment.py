@@ -3,7 +3,8 @@ from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
-from rareapi.models import Comment
+from rareapi.models import Comment, RareUser, Post
+from django.core.exceptions import ValidationError
 
 
 class CommentView(ViewSet):
@@ -21,6 +22,7 @@ class CommentView(ViewSet):
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
+        
 
     def list(self, request):
         """Handle GET requests to get all comments
@@ -36,6 +38,30 @@ class CommentView(ViewSet):
         serializer = CommentSerializer(
             comments, many=True, context={'request': request})
         return Response(serializer.data)
+    
+    
+    def create(self, request):
+        """Handle POST operations for comments
+
+        Returns:
+            Response -- JSON serialized comment instance
+        """
+        author = RareUser.objects.get(user=request.auth.user)
+
+        comment = Comment()
+        comment.author = author
+        comment.content = request.data["content"]
+        # comment.created_on = request.data["created_on"]
+        post = Post.objects.all().filter(id = request.data["postId"])
+        comment.post = post
+
+        try:
+            comment.save()
+            serializer = CommentSerializer(comment, context={'request': request})
+            return Response(serializer.data)
+        except ValidationError as ex:
+            return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
+        
     
 
 class CommentSerializer(serializers.ModelSerializer):
