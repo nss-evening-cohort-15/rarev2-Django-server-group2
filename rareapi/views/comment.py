@@ -66,6 +66,25 @@ class CommentView(ViewSet):
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
         
+        
+    def destroy(self, request, pk=None):
+        """Handle DELETE requests for a single comment
+
+        Returns:
+            Response -- 200, 404, or 500 status code
+        """
+        try:
+            comment = Comment.objects.get(pk=pk)
+            if comment.author == RareUser.objects.get(user=request.auth.user):
+                comment.delete()
+                return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        except comment.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
     
 
 class CommentSerializer(serializers.ModelSerializer):
