@@ -1,44 +1,46 @@
-"""View module for handling requests about categories"""
+"""View module for handling requests about tags"""
+# from nis import cat
+# from unicodedata import tag
 from django.http import HttpResponseServerError
 from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
-from rareapi.models import Category
+from rareapi.models import Tag
 
 
-class CategoryView(ViewSet):
-    """Category types"""
+class TagView(ViewSet):
+    """Tag types"""
     
     def create(self, request):
-        """Handle POST operations for categories
+        """Handle POST operations for tags
 
         Returns:
-            Response -- JSON serialized category instance
+            Response -- JSON serialized tag instance
         """
 
-        category = Category()
-        category.label = request.data["label"]
-        
+        tag = Tag()
+        tag.label = request.data["label"]
+
 
         try:
-            category.save()
-            serializer = CategorySerializer(category, context={'request': request})
+            tag.save()
+            serializer = TagSerializer(tag, context={'request': request})
             return Response(serializer.data)
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
 
 
     def retrieve(self, request, pk=None):
-        """Handle GET requests for single category
+        """Handle GET requests for single tag
 
         Returns:
-            Response -- JSON serialized category
+            Response -- JSON serialized tag
         """
         try:
-            category_type = Category.objects.get(pk=pk)
-            serializer = CategorySerializer(category_type, context={'request': request})
+            tag_type = Tag.objects.get(pk=pk)
+            serializer = TagSerializer(tag_type, context={'request': request})
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
@@ -49,25 +51,25 @@ class CategoryView(ViewSet):
         Returns:
             Response -- JSON serialized list of categories
         """
-        category_types = Category.objects.all()
+        tag_types = Tag.objects.all()
 
         # Note the addtional `many=True` argument to the
         # serializer. It's needed when you are serializing
         # a list of objects instead of a single object.
-        serializer = CategorySerializer(
-            category_types, many=True, context={'request': request})
+        serializer = TagSerializer(
+            tag_types, many=True, context={'request': request})
         return Response(serializer.data)
     
     def update(self, request, pk=None):
-        """Handle PUT requests for a category
+        """Handle PUT requests for a tag
         Returns:
             Response -- Empty body with 204 status code
         """
 
-        category = Category.objects.get(pk=pk)        
-        category.label = request.data["label"]
+        tag = Tag.objects.get(pk=pk)        
+        tag.label = request.data["label"]
         
-        category.save()
+        tag.save()
         # 204 status code means everything worked but the
         # server is not sending back any data in the response
         return Response({}, status=status.HTTP_204_NO_CONTENT)
@@ -80,25 +82,24 @@ class CategoryView(ViewSet):
             Response -- 200, 404, or 500 status code
         """
         try:
-            category = Category.objects.get(pk=pk)
-            category.delete()
+            tag = Tag.objects.get(pk=pk)
+            tag.delete()
 
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        except Category.DoesNotExist as ex:
+        except Tag.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
-    
-class CategorySerializer(serializers.ModelSerializer):
-    """JSON serializer for categories
+class TagSerializer(serializers.ModelSerializer):
+    """JSON serializer for tags
 
     Arguments:
         serializers
     """
     class Meta:
-        model = Category
+        model = Tag
         fields = ('id', 'label')
