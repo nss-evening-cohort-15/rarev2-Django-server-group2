@@ -1,6 +1,7 @@
 """View module for handling requests about comments"""
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import serializers
 from rareapi.models import Comment, RareUser, Post
@@ -52,13 +53,16 @@ class CommentView(ViewSet):
         comment.author = author
         comment.content = request.data["content"]
         # comment.created_on = request.data["created_on"]
-        post = Post.objects.all().filter(id = request.data["postId"])
+        post = Post.objects.get(pk=request.data["postId"])
+        # post = Post.objects.all().filter(id = request.data["postId"])
+        # serializedPost = PostSerializer(
+        #     post, many=False, context={'request': request})
         comment.post = post
 
         try:
             comment.save()
             serializer = CommentSerializer(comment, context={'request': request})
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -74,3 +78,16 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('id', 'content', 'created_on', 'post', 'author')
         depth = 3
+        
+        
+class PostSerializer(serializers.ModelSerializer):
+    """JSON serializer for posts
+
+    Arguments:
+        serializers
+    """
+    class Meta:
+        model = Post
+        fields = ('id', 'author', 'category', 'title', 
+                  'publication_date', 'image_url', 'content', 'approved')
+        # depth = 3
