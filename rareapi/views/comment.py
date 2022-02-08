@@ -66,6 +66,24 @@ class CommentView(ViewSet):
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
         
+    def update(self, request, pk=None):
+        """Handle PUT requests for a comment
+        Returns:
+            Response -- Empty body with 204 status code
+        """
+        author = RareUser.objects.get(user=request.auth.user)
+        post = Post.objects.get(pk=request.data["postId"])
+
+        comment = Comment.objects.get(pk=pk)        
+        comment.author = author
+        comment.post = post
+        comment.content = request.data["content"]
+
+        comment.save()
+        # 204 status code means everything worked but the
+        # server is not sending back any data in the response
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        
         
     def destroy(self, request, pk=None):
         """Handle DELETE requests for a single comment
