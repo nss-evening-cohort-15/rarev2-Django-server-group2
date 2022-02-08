@@ -12,3 +12,14 @@ class RareUser(models.Model):
     # auto_add: overwrite when everytime it's saved
     active = models.BooleanField(default=True)
     profile_image_url = models.URLField() #default max_length=200
+    subscription = models.ManyToManyField('rareapi.RareUser', related_name='subscribe_by') # attendees
+    
+    
+    # for custom properties that are not stored in the database
+    @property
+    def subscribed(self):
+        return self.__subscribed
+    
+    @subscribed.setter
+    def subscribed(self, value):
+        self.__subscribed = value
