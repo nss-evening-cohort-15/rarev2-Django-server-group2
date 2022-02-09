@@ -113,6 +113,13 @@ class PostView(ViewSet):
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+    @action(methods=['get'], detail=False, permission_classes=[IsAdminUser])
+    def unapproved(self, request):
+        pass
+    #post = Post.objects.filter(approved=False)
+    
 
 
 class PostSerializer(serializers.ModelSerializer):
