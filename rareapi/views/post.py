@@ -1,6 +1,8 @@
 """View module for handling requests about posts"""
 from django.core.exceptions import ValidationError
 from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -113,8 +115,27 @@ class PostView(ViewSet):
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
-
+    @action(methods=['get'], detail=False, permission_classes=[IsAdminUser])
+    def unapproved(self, request):
+        try:
+            unapprovedPosts = Post.objects.filter(approved=False)
+            serializer = PostSerializer(unapprovedPosts, many=True, context={'request': request})
+            return Response(serializer.data)   
+        
+        except Exception as ex:
+                return Response({'message': ex.args[0]}) 
+            
+            
+    @action(methods=['put'], detail=True, permission_classes=[IsAdminUser])        
+    def approve(self, request, pk=None):
+        post = Post.objects.get(pk=pk)
+        post.approved = True
+        post.save()
+        return Response({}, status=status.HTTP_204_NO_CONTENT)   
+            
+    
 class PostSerializer(serializers.ModelSerializer):
     """JSON serializer for posts
 
