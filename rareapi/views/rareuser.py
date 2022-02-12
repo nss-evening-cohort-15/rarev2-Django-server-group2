@@ -21,7 +21,6 @@ class RareUserView(ViewSet):
             rareuser = RareUser.objects.get(pk=pk)
             login_rareuser = RareUser.objects.get(user=request.auth.user)
             
-            
             rareuser.subscribed = login_rareuser in rareuser.subscribe_by.all()
             
             serializer = RareUserSerializer(rareuser, context={'request': request})
@@ -50,7 +49,7 @@ class RareUserView(ViewSet):
     def subscription(self, request, pk=None): 
     
         login_rareuser = RareUser.objects.get(user=request.auth.user)
-        rareuser = RareUser.objects.get(pk = pk)
+        rareuser = RareUser.objects.get(pk=pk)
 
         # A rareuser wants to subscribe to another rareuser
         if request.method == "POST":
@@ -58,6 +57,7 @@ class RareUserView(ViewSet):
                 # Using the attendees field on the event makes it simple to add a gamer to the event
                 # .add(gamer) will insert into the join table a new row the gamer_id and the event_id
                 rareuser.subscribe_by.add(login_rareuser)
+                
                 return Response({'done': True}, status=status.HTTP_201_CREATED)
             
             except Exception as ex:
